@@ -46,18 +46,70 @@ document.addEventListener('keyup', (e) => {
     slideUp();
     newFieldGeneretion();
   } else if (e.code === 'ArrowDown') {
-
     slideDown();
     newFieldGeneretion();
   }
   gameScore.innerText = score;
 
-  if (!checkPossibleMovVerticaly() && !checkPossibleMovHorizontaly()
-   && !isEmptyCell()) {
+  if (
+    !checkPossibleMovVerticaly()
+    && !checkPossibleMovHorizontaly()
+    && !isEmptyCell()
+  ) {
     isLose();
 
     // eslint-disable-next-line no-useless-return
     return;
+  }
+});
+
+/* events for swipes */
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchmove', (e) => {
+  touchEndX = e.touches[0].clientX;
+  touchEndY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', () => {
+  const diffX = touchEndX - touchStartX;
+  const diffY = touchEndY - touchStartY;
+
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+    if (diffX > 50) {
+      slideRight();
+      newFieldGeneretion();
+    } else if (diffX < -50) {
+      slideLeft();
+      newFieldGeneretion();
+    }
+  } else {
+    if (diffY > 50) {
+      slideDown();
+      newFieldGeneretion();
+    } else if (diffY < -50) {
+      slideUp();
+      newFieldGeneretion();
+    }
+  }
+
+  gameScore.innerText = score;
+
+  if (
+    !checkPossibleMovVerticaly()
+    && !checkPossibleMovHorizontaly()
+    && !isEmptyCell()
+  ) {
+    isLose();
   }
 });
 
@@ -74,8 +126,7 @@ function newFieldGeneretion() {
   const c = Math.floor(Math.random() * columns);
 
   if (gameField[r][c] === 0) {
-    const newField = document.getElementById(r.toString()
-       + '-' + c.toString());
+    const newField = document.getElementById(r.toString() + '-' + c.toString());
 
     const valueNum = Math.random();
 
@@ -118,8 +169,12 @@ function resetGameField() {
 /* directions of moving for game field */
 function slideUp() {
   for (let c = 0; c < columns; c++) {
-    let row = [gameField[0][c], gameField[1][c],
-      gameField[2][c], gameField[3][c]];
+    let row = [
+      gameField[0][c],
+      gameField[1][c],
+      gameField[2][c],
+      gameField[3][c],
+    ];
 
     row = shift(row);
 
@@ -136,8 +191,12 @@ function slideUp() {
 
 function slideDown() {
   for (let c = 0; c < columns; c++) {
-    let row = [gameField[0][c], gameField[1][c],
-      gameField[2][c], gameField[3][c]];
+    let row = [
+      gameField[0][c],
+      gameField[1][c],
+      gameField[2][c],
+      gameField[3][c],
+    ];
 
     row.reverse();
     row = shift(row);
@@ -227,7 +286,7 @@ function updateCell(cell, num) {
 }
 
 function filterZero(row) {
-  return row.filter(r => r);
+  return row.filter((r) => r);
 }
 
 /* check game field for empty cells */
@@ -285,11 +344,15 @@ function checkPossibleMovVerticaly() {
   const result = [];
 
   for (let c = 0; c < columns; c++) {
-    arr.push([gameField[0][c], gameField[1][c],
-      gameField[2][c], gameField[3][c]]);
+    arr.push([
+      gameField[0][c],
+      gameField[1][c],
+      gameField[2][c],
+      gameField[3][c],
+    ]);
   }
 
-  arr.forEach(b => result.push(isMergingRow(b)));
+  arr.forEach((b) => result.push(isMergingRow(b)));
 
-  return result.some(el => el);
+  return result.some((el) => el);
 }
